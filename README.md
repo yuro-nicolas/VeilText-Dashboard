@@ -44,6 +44,99 @@ strategy, not the filtering behavior.
 
 ---
 
+## How Scan Performance Is Measured
+
+Every full-page scan and every mutation-triggered re-scan is timed using the
+browser's `performance.now()` high-resolution timer, which is more precise than
+`Date.now()` and unaffected by system clock adjustments.
+
+- **Full-page scans** (`filter-engine.js`) - a timestamp is taken immediately
+  before the DOM tree walk begins and again right after it finishes; the
+  difference (`scanMs`) is recorded alongside the number of characters scanned
+  and the number of matches found.
+- **Mutation-triggered scans** (`observer.js`) - the same timing is applied to
+  the smaller, scoped re-scans that run when new content is added to the page
+  (infinite scroll, chat messages, SPA navigation), so live filtering overhead
+  can be measured separately from the initial page load.
+- **Per-algorithm attribution** - because timing is captured independently of
+  which engine is active, the same measurement code produces directly
+  comparable numbers for Aho-Corasick and Wu-Manber without any special-casing.
+
+This timing data drives the live "Filtered" counter shown in the popup, and is
+also the raw data source for the Dashboard's performance figures (see below).
+
+---
+
+## Live Content Monitoring (MutationObserver)
+
+Filtering doesn't stop after the page's initial load. `src/content/observer.js`
+attaches a `MutationObserver` to the page after the first full scan completes,
+so content that appears afterward - infinite-scroll feeds, chat widgets, ads,
+comment sections, or anything else injected into the DOM later - gets scanned
+and filtered too, without requiring a page refresh.
+
+Key behaviors:
+
+- **Debounced batching** - rapid bursts of DOM changes are collected over a
+  short window (40ms) and processed together in one pass, rather than
+  triggering a separate scan per individual change.
+- **Scoped re-scans** - only the newly added nodes are checked against the
+  matcher, not the entire page again, keeping live filtering cheap even on
+  pages that mutate frequently.
+- **Shadow DOM support** - open shadow roots are detected and given their own
+  scan and their own observer, since a page-level `MutationObserver` cannot
+  see inside shadow DOM on its own.
+- **SPA navigation detection** - `history.pushState`/`replaceState` and the
+  `popstate` event are patched/hooked so single-page-app route changes (which
+  don't trigger a real page load) still trigger a fresh full-page re-scan,
+  debounced so rapid-fire route changes collapse into a single rescan.
+- **Special-widget polling** - a small interval periodically re-checks a
+  short list of known caption/subtitle selectors (e.g. video captions, embedded
+  post text) that sometimes update in ways the observer's debounce window can
+  miss.
+
+---
+
+## Dashboard
+
+> **Note:** The Dashboard is a **development/testing tool only**, built to
+> measure and compare scan time and mutation latency between Aho-Corasick and
+> Wu-Manber during development and benchmarking. It is **not included in the
+> version of this extension published on the Chrome Web Store** - it exists
+> solely to support this project's algorithm comparison and is intended for
+> local/unpacked use during testing, not for end users.
+
+A standalone page (`dashboard.html`), opened via the **Dashboard** button in
+the popup's stats bar, presents the timing and redaction data collected during
+normal browsing as a benchmarking/reporting view - built specifically to
+support comparing the two matching engines under real usage conditions rather
+than only synthetic benchmarks.
+
+- **Performance summary** - aggregate totals per algorithm: pages scanned,
+  scan count, average scan time, characters scanned, and total redactions,
+  computed from the `performance.now()` timing described above.
+- **Redaction log** - a searchable, filterable table of individual scan events
+  (page URL/title, match count, scan time, mutation latency), so patterns in
+  real-world performance can be inspected page-by-page rather than only as
+  aggregate averages.
+- **Redacted-content preview** - a masked preview of what was flagged on a
+  given logged page, without ever displaying the raw blocked-keyword list in
+  plain text.
+- **Export** - the log can be exported as CSV or JSON for offline analysis,
+  e.g. building charts/tables directly from real browsing sessions rather than
+  only controlled test cases.
+- **Per-algorithm separation** - statistics for Aho-Corasick and Wu-Manber are
+  stored and reported separately, so switching engines mid-session never mixes
+  their numbers together.
+- **Reset** - stats can be cleared from the dashboard to start a fresh
+  benchmarking run.
+
+The dashboard only ever reads data that was already collected locally during
+normal use; it does not perform its own scanning and does not send any data
+off-device.
+
+---
+
 ## Project Structure
 
 ```

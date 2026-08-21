@@ -67,20 +67,12 @@
 
             <div class="keyword-subtabs">
                 <button class="subtab-btn active" data-subtab="blocked">🚫 Blocked</button>
-<<<<<<< HEAD
                 <button class="subtab-btn" data-subtab="include">✅ Allowed</button>
-=======
-                <button class="subtab-btn" data-subtab="include">✅ Include</button>
->>>>>>> c8eea92313bd904367f7ab0e48cbe3b53e7aa0c1
             </div>
 
             <!-- BLOCKED SUB-TAB -->
             <div id="blocked-subtab" class="subtab-content active">
-<<<<<<< HEAD
                 <div class="section-label">Custom-Blocked Words</div>
-=======
-                <div class="section-label">Custom Blocked Words</div>
->>>>>>> c8eea92313bd904367f7ab0e48cbe3b53e7aa0c1
                 <div class="list-controls">
                     <button id="sortBlocked" class="btn btn-secondary btn-small">Sort A–Z</button>
                     <button id="clearBlocked" class="btn btn-danger btn-small">Clear All</button>
@@ -110,11 +102,7 @@
 
             <!-- INCLUDE SUB-TAB -->
             <div id="include-subtab" class="subtab-content">
-<<<<<<< HEAD
                 <div class="section-label">Always Allowed Words</div>
-=======
-                <div class="section-label">Always-Include Words</div>
->>>>>>> c8eea92313bd904367f7ab0e48cbe3b53e7aa0c1
                 <div class="list-controls">
                     <button id="sortInclude" class="btn btn-secondary btn-small">Sort A–Z</button>
                     <button id="clearInclude" class="btn btn-danger btn-small">Clear All</button>
@@ -185,18 +173,6 @@
             </div>
 
             <div class="setting-group">
-<<<<<<< HEAD
-=======
-                <label class="setting-label">Case Sensitivity</label>
-                <label class="toggle-row">
-                    <input type="checkbox" id="caseSensitive">
-                    <span class="toggle-text">Case-sensitive matching</span>
-                </label>
-                <p class="setting-desc">Off (default) - "BAD" and "bad" both match. On - only exact case is redacted.</p>
-            </div>
-
-            <div class="setting-group">
->>>>>>> c8eea92313bd904367f7ab0e48cbe3b53e7aa0c1
                 <label class="setting-label">Whole Word Only</label>
                 <label class="toggle-row">
                     <input type="checkbox" id="wholeWord" checked>
@@ -206,27 +182,6 @@
             </div>
 
             <div class="setting-group">
-<<<<<<< HEAD
-=======
-                <label class="setting-label">Page Load Warning</label>
-                <label class="toggle-row">
-                    <input type="checkbox" id="pageScanWarning" checked>
-                    <span class="toggle-text">Warn when a new page contains flagged content</span>
-                </label>
-                <p class="setting-desc">On (default) - when you open a new page that contains redacted words, a warning overlay appears asking if you want to stay or go back. Does not trigger on scroll or dynamic content.</p>
-            </div>
-
-            <div class="setting-group">
-                <label class="setting-label">Link Pre-Scan Warning</label>
-                <label class="toggle-row">
-                    <input type="checkbox" id="linkScanEnabled" checked>
-                    <span class="toggle-text">Warn before opening flagged links</span>
-                </label>
-                <p class="setting-desc">On (default) - when you click a link whose URL or text contains a redacted word, a warning popup appears before navigating.</p>
-            </div>
-
-            <div class="setting-group">
->>>>>>> c8eea92313bd904367f7ab0e48cbe3b53e7aa0c1
                 <label class="setting-label">Click-to-Reveal</label>
                 <label class="toggle-row">
                     <input type="checkbox" id="revealOnClick" checked>
@@ -235,7 +190,6 @@
                 <p class="setting-desc">On (default) - clicking a redacted/blurred word shows a warning; confirming reveals it, clicking again hides it.</p>
             </div>
 
-<<<<<<< HEAD
             <div class="setting-group">
                 <label class="setting-label">Case Sensitivity</label>
                 <label class="toggle-row">
@@ -263,8 +217,6 @@
                 <p class="setting-desc">Off (default) - when you click a link whose URL or text contains a redacted word, a warning popup appears before navigating.</p>
             </div>
 
-=======
->>>>>>> c8eea92313bd904367f7ab0e48cbe3b53e7aa0c1
         </div>
 
         <!-- ABOUT TAB -->
@@ -274,11 +226,6 @@
                 <p> VeilText scans page text with a multi-pattern matching engine you choose in Settings:</p>
                 <p><strong>Aho-Corasick</strong> builds a trie of your keywords plus failure links, forming a finite-state automaton that scans text in a single deterministic pass. O(n + m + z) time.</p>
                 <p><strong>Wu-Manber</strong> instead precomputes SHIFT and HASH tables from short blocks of your keywords, letting the scanner skip ahead through text and only verify matches when a skip reaches zero.</p>
-<<<<<<< HEAD
-=======
-                <h3>Click-to-Reveal</h3>
-                <p>Redacted text isn't deleted, clicking it shows a warning, and confirming reveals the original text. Click again to hide it. This can be turned off in Settings, in which case clicking redacted text does nothing.</p>
->>>>>>> c8eea92313bd904367f7ab0e48cbe3b53e7aa0c1
                 <h3>Privacy</h3>
                 <p>All filtering is done <strong>entirely on your device</strong>. No page content, keywords, or user data is ever sent to any server.</p>
             </div>

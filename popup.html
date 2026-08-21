@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeilText - Profanity Filter</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+
+        <!-- HEADER -->
+        <header>
+            <div class="header-top">
+                <div class="logo">
+                    <div class="logo-icon-wrapper">
+                        <img src="icons/icon32.png" alt="VeilText Logo" class="logo-icon">
+                    </div>
+
+                    <div class="logo-text">
+                        <h1>VeilText</h1>
+                        <p class="subtitle">Dual-algorithm profanity filter</p>
+                    </div>
+                </div>
+                <div class="master-toggle-wrap">
+                    <span class="toggle-label" id="masterLabel">ON</span>
+                    <label class="switch">
+                        <input type="checkbox" id="masterToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="stats-bar">
+                <div class="stat">
+                    <span class="stat-val" id="statKeywords">0</span>
+                    <span class="stat-key">Custom Blocked</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-val" id="statFiltered">0</span>
+                    <span class="stat-key">Filtered</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-val algo" id="statAlgo">AC</span>
+                    <span class="stat-key">Engine</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <button id="openDashboardBtn" class="dash-link-btn">Dashboard</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- STATUS MESSAGE -->
+        <div id="statusMessage" class="status-message hidden"></div>
+
+        <!-- TABS -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="keywords">🔑 Keywords</button>
+            <button class="tab-btn" data-tab="settings">⚙️ Settings</button>
+            <button class="tab-btn" data-tab="about">ℹ️ About</button>
+        </div>
+
+        <!-- KEYWORDS TAB -->
+        <div id="keywords-tab" class="tab-content active">
+
+            <div class="keyword-subtabs">
+                <button class="subtab-btn active" data-subtab="blocked">🚫 Blocked</button>
+<<<<<<< HEAD
+                <button class="subtab-btn" data-subtab="include">✅ Allowed</button>
+=======
+                <button class="subtab-btn" data-subtab="include">✅ Include</button>
+>>>>>>> c8eea92313bd904367f7ab0e48cbe3b53e7aa0c1
+            </div>
+
+            <!-- BLOCKED SUB-TAB -->
+            <div id="blocked-subtab" class="subtab-content active">
+<<<<<<< HEAD
+                <div class="section-label">Custom-Blocked Words</div>
+=======
+                <div class="section-label">Custom Blocked Words</div>
+>>>>>>> c8eea92313bd904367f7ab0e48cbe3b53e7aa0c1
+                <div class="list-controls">
+                    <button id="sortBlocked" class="btn btn-secondary btn-small">Sort A–Z</button>
+                    <button id="clearBlocked" class="btn btn-danger btn-small">Clear All</button>
+                </div>
+
+                <!-- QUICK ADD -->
+                <div class="quick-add">
+                    <input type="text" id="quickAddBlockedInput" placeholder="Type a keyword and press Add…" />
+                    <button id="quickAddBlockedBtn" class="btn btn-primary btn-small">Add</button>
+                </div>
+                <p class="setting-desc" style="margin-top:8px;">
+                    Multiple words supported (comma-separated).
+                </p>
+
+                <!-- CHIPS -->
+                <div id="blockedChips" class="chips-container" aria-live="polite">
+                    <span class="chips-empty">No custom blocked words yet. Add one above.</span>
+                </div>
+
+                <div class="count-display">
+                    <span id="blockedCount">0</span> custom blocked word(s) &nbsp;·&nbsp; <span class="autosave-hint">auto-saved</span>
+                </div>
+                <p class="setting-desc" style="margin-top:8px;">
+                    These are added on top of the extension's built-in default lexicon.
+                </p>
+            </div>
+
+            <!-- INCLUDE SUB-TAB -->
+            <div id="include-subtab" class="subtab-content">
+<<<<<<< HEAD
+                <div class="section-label">Always Allowed Words</div>
+=======
+                <div class="section-label">Always-Include Words</div>
+>>>>>>> c8eea92313bd904367f7ab0e48cbe3b53e7aa0c1
+                <div class="list-controls">
+                    <button id="sortInclude" class="btn btn-secondary btn-small">Sort A–Z</button>
+                    <button id="clearInclude" class="btn btn-danger btn-small">Clear All</button>
+                </div>
+
+                <div class="quick-add">
+                    <input type="text" id="quickAddIncludeInput" placeholder="Type a word to always allow…" />
+                    <button id="quickAddIncludeBtn" class="btn btn-primary btn-small">Add</button>
+                </div>                
+                <p class="setting-desc" style="margin-top:8px;">
+                    Multiple words supported (comma-separated).
+                </p>
+
+                <div id="includeChips" class="chips-container" aria-live="polite">
+                    <span class="chips-empty">No included words yet. Add one above.</span>
+                </div>
+
+                <div class="count-display">
+                    <span id="includeCount">0</span> included word(s) &nbsp;·&nbsp; <span class="autosave-hint">auto-saved</span>
+                </div>
+                <p class="setting-desc" style="margin-top:8px;">
+                    Words here are never redacted, even if they match the built-in lexicon or your blocked keywords. Use this to fix false positives.
+                </p>
+            </div>
+        </div>
+
+        <!-- SETTINGS TAB -->
+        <div id="settings-tab" class="tab-content">
+
+            <div class="setting-group">
+                <label class="setting-label">Detection Algorithm</label>
+                <p class="setting-desc">Which multi-pattern matching engine scans page text. Both give identical results, this changes only how the matching is computed internally.</p>
+                <div class="radio-group">
+                    <label class="radio-opt">
+                        <input type="radio" name="algorithm" value="ahocorasick" checked>
+                        <span><strong>Aho-Corasick</strong><small>Trie + failure links · deterministic single-pass scan</small></span>
+                    </label>
+                    <label class="radio-opt">
+                        <input type="radio" name="algorithm" value="wumanber">
+                        <span><strong>Wu-Manber</strong><small>Block hashing + shift table · skips ahead through text</small></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <label class="setting-label">Filter Mode</label>
+                <p class="setting-desc">How matched text is displayed on the page.</p>
+                <div class="radio-group">
+                    <label class="radio-opt">
+                        <input type="radio" name="filterMode" value="blur" checked>
+                        <span><strong>Blur</strong><small>Text blurred out</small></span>
+                    </label>
+                    <label class="radio-opt">
+                        <input type="radio" name="filterMode" value="hide">
+                        <span><strong>Hide</strong><small>Text replaced with blank block</small></span>
+                    </label>
+                    <label class="radio-opt">
+                        <input type="radio" name="filterMode" value="replace">
+                        <span><strong>Replace</strong><small>Text replaced with custom symbol</small></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-group" id="replaceTextGroup">
+                <label class="setting-label" for="replacementText">Replacement Text</label>
+                <p class="setting-desc">Shown when mode is "Replace".</p>
+                <input type="text" id="replacementText" value="█████" maxlength="20" />
+            </div>
+
+            <div class="setting-group">
+<<<<<<< HEAD
+=======
+                <label class="setting-label">Case Sensitivity</label>
+                <label class="toggle-row">
+                    <input type="checkbox" id="caseSensitive">
+                    <span class="toggle-text">Case-sensitive matching</span>
+                </label>
+                <p class="setting-desc">Off (default) - "BAD" and "bad" both match. On - only exact case is redacted.</p>
+            </div>
+
+            <div class="setting-group">
+>>>>>>> c8eea92313bd904367f7ab0e48cbe3b53e7aa0c1
+                <label class="setting-label">Whole Word Only</label>
+                <label class="toggle-row">
+                    <input type="checkbox" id="wholeWord" checked>
+                    <span class="toggle-text">Match whole words only</span>
+                </label>
+                <p class="setting-desc">On (default) - "bad" won't redact "badge". Off - redacts "bad" inside any word.</p>
+            </div>
+
+            <div class="setting-group">
+<<<<<<< HEAD
+=======
+                <label class="setting-label">Page Load Warning</label>
+                <label class="toggle-row">
+                    <input type="checkbox" id="pageScanWarning" checked>
+                    <span class="toggle-text">Warn when a new page contains flagged content</span>
+                </label>
+                <p class="setting-desc">On (default) - when you open a new page that contains redacted words, a warning overlay appears asking if you want to stay or go back. Does not trigger on scroll or dynamic content.</p>
+            </div>
+
+            <div class="setting-group">
+                <label class="setting-label">Link Pre-Scan Warning</label>
+                <label class="toggle-row">
+                    <input type="checkbox" id="linkScanEnabled" checked>
+                    <span class="toggle-text">Warn before opening flagged links</span>
+                </label>
+                <p class="setting-desc">On (default) - when you click a link whose URL or text contains a redacted word, a warning popup appears before navigating.</p>
+            </div>
+
+            <div class="setting-group">
+>>>>>>> c8eea92313bd904367f7ab0e48cbe3b53e7aa0c1
+                <label class="setting-label">Click-to-Reveal</label>
+                <label class="toggle-row">
+                    <input type="checkbox" id="revealOnClick" checked>
+                    <span class="toggle-text">Let clicking a redacted word ask to reveal it</span>
+                </label>
+                <p class="setting-desc">On (default) - clicking a redacted/blurred word shows a warning; confirming reveals it, clicking again hides it.</p>
+            </div>
+
+<<<<<<< HEAD
+            <div class="setting-group">
+                <label class="setting-label">Case Sensitivity</label>
+                <label class="toggle-row">
+                    <input type="checkbox" id="caseSensitive">
+                    <span class="toggle-text">Case-sensitive matching</span>
+                </label>
+                <p class="setting-desc">Off (default) - "BAD" and "bad" both match. On - only exact case is redacted.</p>
+            </div>
+
+            <div class="setting-group">
+                <label class="setting-label">Page Load Warning</label>
+                <label class="toggle-row">
+                    <input type="checkbox" id="pageScanWarning">
+                    <span class="toggle-text">Warn when a new page contains flagged content</span>
+                </label>
+                <p class="setting-desc">Off (default) - when you open a new page that contains redacted words, a warning overlay appears asking if you want to stay or go back. Does not trigger on scroll or dynamic content.</p>
+            </div>
+
+            <div class="setting-group">
+                <label class="setting-label">Link Pre-Scan Warning</label>
+                <label class="toggle-row">
+                    <input type="checkbox" id="linkScanEnabled">
+                    <span class="toggle-text">Warn before opening flagged links</span>
+                </label>
+                <p class="setting-desc">Off (default) - when you click a link whose URL or text contains a redacted word, a warning popup appears before navigating.</p>
+            </div>
+
+=======
+>>>>>>> c8eea92313bd904367f7ab0e48cbe3b53e7aa0c1
+        </div>
+
+        <!-- ABOUT TAB -->
+        <div id="about-tab" class="tab-content">
+            <div class="about-section">
+                <h3>How It Works</h3>
+                <p> VeilText scans page text with a multi-pattern matching engine you choose in Settings:</p>
+                <p><strong>Aho-Corasick</strong> builds a trie of your keywords plus failure links, forming a finite-state automaton that scans text in a single deterministic pass. O(n + m + z) time.</p>
+                <p><strong>Wu-Manber</strong> instead precomputes SHIFT and HASH tables from short blocks of your keywords, letting the scanner skip ahead through text and only verify matches when a skip reaches zero.</p>
+<<<<<<< HEAD
+=======
+                <h3>Click-to-Reveal</h3>
+                <p>Redacted text isn't deleted, clicking it shows a warning, and confirming reveals the original text. Click again to hide it. This can be turned off in Settings, in which case clicking redacted text does nothing.</p>
+>>>>>>> c8eea92313bd904367f7ab0e48cbe3b53e7aa0c1
+                <h3>Privacy</h3>
+                <p>All filtering is done <strong>entirely on your device</strong>. No page content, keywords, or user data is ever sent to any server.</p>
+            </div>
+        </div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>

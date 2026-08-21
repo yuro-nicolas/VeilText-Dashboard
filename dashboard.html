@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeilText - Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+<div class="page">
+
+    <!-- HEADER -->
+    <header class="dash-header">
+        <div class="dash-header-inner">
+            <div class="logo">
+                <div class="logo-icon-wrapper">
+                    <img src="icons/icon32.png" alt="VeilText Logo" class="logo-icon-img">
+                </div>
+                <div>
+                    <h1>VeilText</h1>
+                    <p class="subtitle">Statistics · Algorithm Comparison</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button id="exportCsvBtn"  class="btn btn-secondary">Export CSV</button>
+                <button id="exportJsonBtn" class="btn btn-secondary">Export JSON</button>
+                <button id="clearStatsBtn" class="btn btn-danger">Clear Stats</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ENGINE TABS -->
+    <!-- Each engine has completely separate storage (textguard_stats_<engine>),
+         so switching tabs here never mixes data between Aho-Corasick and
+         Wu-Manber. -->
+    <nav class="tab-bar" id="tabBar" role="tablist" aria-label="Matching engine">
+        <button class="tab-btn tab-ac" id="tabBtn-ahocorasick" data-algo="ahocorasick" role="tab">
+            <span class="tab-dot dot-ac"></span>
+            <span class="tab-label">Aho-Corasick</span>
+            <span class="tab-live-pill" id="livePill-ahocorasick" hidden>Active in Extension</span>
+        </button>
+        <button class="tab-btn tab-wm" id="tabBtn-wumanber" data-algo="wumanber" role="tab">
+            <span class="tab-dot dot-wm"></span>
+            <span class="tab-label">Wu-Manber</span>
+            <span class="tab-live-pill" id="livePill-wumanber" hidden>Active in Extension</span>
+        </button>
+    </nav>
+
+    <main>
+
+        <!-- SUMMARY CARDS -->
+        <section class="cards-row">
+            <div class="card card-a">
+                <div class="card-val" id="totalRedacted">0</div>
+                <div class="card-label" id="totalRedactedLabel">Words Redacted</div>
+            </div>
+            <div class="card card-b">
+                <div class="card-val" id="totalPages">0</div>
+                <div class="card-label" id="totalPagesLabel">Pages Scanned</div>
+            </div>
+            <div class="card card-d">
+                <div class="card-val" id="avgPerPage">0</div>
+                <div class="card-label" id="avgPerPageLabel">Avg. Redactions / Page</div>
+            </div>
+            <div class="card card-c">
+                <div class="card-val" id="totalKeywords">0</div>
+                <div class="card-label">Active Keywords <span class="card-sub">(shared, both engines)</span></div>
+            </div>
+        </section>
+
+        <!-- ENGINE PERFORMANCE -->
+        <section class="section">
+            <div class="section-header">
+                <h2 id="perfTitle">Aho-Corasick Performance</h2>
+            </div>
+            <div class="bench-cards">
+                <div class="bench-card">
+                    <div class="bench-val" id="perfAvgScan">—</div>
+                    <div class="bench-label">Avg. Scan (ms)</div>
+                </div>
+                <div class="bench-card">
+                    <div class="bench-val" id="perfFastestScan">—</div>
+                    <div class="bench-label">Fastest Scan (ms)</div>
+                </div>
+                <div class="bench-card">
+                    <div class="bench-val" id="perfScans">—</div>
+                    <div class="bench-label">Scans Run</div>
+                </div>
+                <div class="bench-card">
+                    <div class="bench-val" id="perfChars">—</div>
+                    <div class="bench-label">Total Chars Scanned</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- REDACTION LOG -->
+        <section class="section">
+            <div class="section-header">
+                <h2 id="logTitle">Redaction Log — Aho-Corasick</h2>
+                <div class="table-controls">
+                    <input type="text" id="searchLog" placeholder="Filter by site or title…" class="search-input" />
+                    <span class="section-sub" id="logCount">0 entries</span>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table id="logTable">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Site / Page</th>
+                            <th>Redacted</th>
+                            <th>Scan (ms)</th>
+                            <th>Mutation Latency (ms)</th>
+                            <th>Chars</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logBody">
+                        <tr><td colspan="6" class="empty-row">No data yet. Browse the web with the extension enabled.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+</div>
+<script src="dashboard.js"></script>
+</body>
+</html>

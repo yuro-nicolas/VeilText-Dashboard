@@ -1,0 +1,432 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap');
+
+:root {
+    --matcha-950: #20291b;
+    --matcha-900: #2b3524;
+    --matcha-800: #3d4a2f;
+    --matcha-700: #54633f;
+    --matcha-600: #6b7c4f;
+    --matcha-500: #869966;
+    --matcha-400: #a3b382;
+    --matcha-300: #c3d1a4;
+    --matcha-200: #dde5c4;
+    --matcha-100: #eef1e0;
+    --matcha-cream: #f6f3e7;
+    --matcha-danger: #a8553c;
+    --matcha-danger-light: #c97b5f;
+    --matcha-wm: #b98a3e;
+    --font-heading: 'Quicksand', sans-serif;
+    --font-body: 'Nunito Sans', "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-body);
+    background: var(--matcha-cream);
+    color: var(--matcha-900);
+}
+
+.page {
+    max-width: 1400px;
+    margin: auto;
+    padding-bottom: 60px;
+}
+
+h1, h2 {
+    margin: 0;
+    font-family: var(--font-heading);
+}
+
+.subtitle {
+    font-size: 13px;
+    color: var(--matcha-700);
+    margin-top: 2px;
+}
+
+.section-sub {
+    font-size: 13px;
+    color: var(--matcha-700);
+}
+
+/* ===============================
+   HEADER
+================================= */
+
+.dash-header {
+    background: var(--matcha-200);
+    border-bottom: 1px solid var(--matcha-300);
+    padding: 20px 30px;
+}
+
+.dash-header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.logo-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--matcha-100);
+    border: 1px solid var(--matcha-300);
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.logo-icon-img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* ===============================
+   BUTTONS
+================================= */
+
+.btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    transition: filter 0.15s ease;
+}
+
+.btn-secondary {
+    background: var(--matcha-100);
+    color: var(--matcha-800);
+    border: 1px solid var(--matcha-300);
+}
+
+.btn-secondary:hover {
+    background: var(--matcha-300);
+}
+
+.btn-danger {
+    background: var(--matcha-danger);
+    color: var(--matcha-cream);
+}
+
+.btn-danger:hover {
+    filter: brightness(1.08);
+}
+
+/* ===============================
+   ENGINE TABS
+================================= */
+
+.tab-bar {
+    display: flex;
+    gap: 12px;
+    padding: 18px 30px 0;
+}
+
+.tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 1px solid var(--matcha-300);
+    background: var(--matcha-100);
+    color: var(--matcha-700);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tab-btn:hover {
+    background: var(--matcha-200);
+}
+
+.tab-btn.active {
+    background: var(--matcha-cream);
+    border-color: var(--matcha-600);
+    color: var(--matcha-900);
+    box-shadow: 0 -3px 0 var(--matcha-600) inset;
+}
+
+.tab-btn.tab-wm.active {
+    border-color: var(--matcha-wm);
+    box-shadow: 0 -3px 0 var(--matcha-wm) inset;
+}
+
+.tab-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.tab-live-pill {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    background: var(--matcha-600);
+    color: var(--matcha-cream);
+    padding: 3px 9px;
+    border-radius: 20px;
+}
+
+.tab-btn.tab-wm .tab-live-pill {
+    background: var(--matcha-wm);
+}
+
+/* ===============================
+   SUMMARY CARDS
+================================= */
+
+.cards-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 18px;
+    padding: 30px;
+}
+
+.card {
+    background: var(--matcha-100);
+    border-radius: 14px;
+    padding: 22px;
+    border: 1px solid var(--matcha-300);
+}
+
+.card-val {
+    font-family: var(--font-heading);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--matcha-900);
+}
+
+.card-label {
+    font-size: 13px;
+    color: var(--matcha-700);
+}
+
+.card-sub {
+    font-size: 11px;
+    color: var(--matcha-500);
+}
+
+/* Accent Borders */
+
+.card-a { border-left: 4px solid var(--matcha-600); }
+.card-b { border-left: 4px solid var(--matcha-500); }
+.card-c { border-left: 4px solid var(--matcha-700); }
+.card-d { border-left: 4px solid var(--matcha-danger); }
+.card-e { border-left: 4px solid var(--matcha-wm); }
+
+/* ===============================
+   SECTION BASE
+================================= */
+
+.section {
+    padding: 30px;
+    margin: 20px 30px;
+    background: var(--matcha-100);
+    border-radius: 16px;
+    border: 1px solid var(--matcha-300);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* ===============================
+   BENCHMARK CARDS
+================================= */
+
+.bench-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+}
+
+.bench-card {
+    background: var(--matcha-100);
+    padding: 16px;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid var(--matcha-200);
+}
+
+.bench-val {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--matcha-900);
+}
+
+.bench-label {
+    font-size: 11.5px;
+    color: var(--matcha-700);
+}
+
+/* ===============================
+   ENGINE DOT COLORS (used by the tab bar)
+================================= */
+
+.dot-ac { background: var(--matcha-600); }
+.dot-wm { background: var(--matcha-wm); }
+
+/* ===============================
+   TABLE
+================================= */
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+thead {
+    background: var(--matcha-200);
+}
+
+th, td {
+    padding: 10px 12px;
+    text-align: left;
+}
+
+tbody tr {
+    border-bottom: 1px solid var(--matcha-200);
+}
+
+tbody tr:hover {
+    background: var(--matcha-cream);
+}
+
+.empty-row {
+    text-align: center;
+    color: var(--matcha-500);
+}
+
+/* ===============================
+   SEARCH INPUT
+================================= */
+
+.search-input {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--matcha-300);
+    background: var(--matcha-cream);
+    color: var(--matcha-900);
+    font-size: 12px;
+}
+
+.search-input:focus {
+    outline: 1px solid var(--matcha-600);
+}
+
+/* ── TABLE BADGES ── */
+
+.count-badge {
+    display: inline-block;
+    background: var(--matcha-200);
+    color: var(--matcha-800);
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.ms-badge {
+    display: inline-block;
+    background: var(--matcha-100);
+    color: var(--matcha-700);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: monospace;
+    border: 1px solid var(--matcha-300);
+}
+
+.zero {
+    color: var(--matcha-400);
+}
+
+.mut-badge {
+    background: rgba(185, 138, 62, 0.12);
+    border-color: rgba(185, 138, 62, 0.35);
+    color: #8a6425;
+}
+
+.mut-samples {
+    opacity: 0.6;
+    font-size: 10px;
+}
+
+/* ── DASHBOARD-SIDE REDACTION (log titles pulled from browsing history can
+   contain a blocked word verbatim; the content script never runs on this
+   extension page, so we blur matches here too, same look as on-page). ── */
+
+.dash-redacted {
+    filter: blur(4px);
+    background: rgba(168, 85, 60, 0.15);
+    border-radius: 3px;
+    padding: 0 2px;
+    cursor: pointer;
+    transition: outline 0.15s ease;
+}
+
+.dash-redacted:hover {
+    outline: 1px dashed rgba(107, 124, 79, 0.6);
+}
+
+.dash-redacted.revealed {
+    filter: none;
+    background: rgba(134, 153, 102, 0.22);
+    outline: 1px dashed rgba(84, 99, 63, 0.5);
+}
+
+body.no-reveal .dash-redacted {
+    cursor: default;
+}
+
+body.no-reveal .dash-redacted:hover {
+    outline: none;
+}
+
+.timestamp {
+    font-size: 12px;
+    color: var(--matcha-700);
+    white-space: nowrap;
+}
+
+/* ── TABLE CONTROLS ── */
+
+.table-controls {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}

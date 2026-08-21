@@ -44,6 +44,77 @@ strategy, not the filtering behavior.
 
 ---
 
+## What It Can and Can't Filter
+
+VeilText detects and filters **plain, ordinary text only** — it reads whatever
+the browser stores as readable text in a webpage's underlying code (the DOM),
+and checks it against the active keyword list. It does not use machine
+learning, AI, or any kind of meaning/context understanding — it's a literal
+keyword match, nothing more. This keeps it fast and lightweight, but it also
+defines exactly what it can and cannot reach.
+
+### What it CAN filter
+
+- Ordinary text rendered on a webpage — articles, comments, posts, chat
+  messages, and any text that loads dynamically after the initial page load
+- Text inside "open" Shadow DOM widgets some sites use for self-contained
+  components
+- Text inside embedded frames the browser permits the extension to access
+- Outbound links, via the link pre-scan warning, before you click them
+
+### What it CANNOT filter
+
+- **Anything that isn't actual text** — images, audio, video, or text baked
+  into pixels (e.g. a screenshot containing offensive words, or text burned
+  into a video frame). None of that is readable text to begin with, so the
+  extension has no way to see it.
+- **Canvas-based apps** — tools like Google Docs, Google Sheets, and Figma
+  draw their content onto a canvas or as shapes rather than storing it as
+  readable text, so the extension cannot reach any of it, regardless of what
+  the words actually say.
+- **Chrome's built-in PDF viewer** — works the same canvas-like way and is
+  likewise out of reach.
+- **"Closed" Shadow DOM** — deliberately sealed-off widgets some sites build
+  that no extension, including this one, is permitted to read into.
+- **Text you're actively typing** — search bars, comment boxes, and any
+  editable field are intentionally skipped, so the extension never interferes
+  with someone mid-sentence.
+- **Text that isn't actually visible on screen** — e.g. hidden via the page's
+  own CSS — so nothing gets flagged that a reader wouldn't actually see anyway.
+- **Chrome-protected pages** — Chrome blocks *all* extensions, this one
+  included, from running on certain pages no matter what permissions are
+  requested — for example, Chrome's own internal settings pages (`chrome://...`)
+  and **the Chrome Web Store itself**. This isn't a bug or an oversight in
+  VeilText; it's a security restriction Chrome enforces at the browser level,
+  and there is no permission or workaround an extension can request to bypass
+  it. If you notice VeilText doesn't blur anything while browsing the Chrome
+  Web Store, this is why.
+- **Words never added to its list** — detection depends entirely on its fixed
+  keyword list (the default lexicon plus whatever you add). Regional slang,
+  community-specific insults, or brand-new terms that simply weren't included
+  will pass through undetected, and the list only updates when a person —
+  developer or user — manually adds to it; it does not learn or pull updates
+  from the internet on its own.
+- **Context and intent** — because it has no understanding of meaning, a word
+  that's offensive in one sentence but an ordinary/technical term in another
+  can't be told apart. This means both false positives (flagging harmless
+  text) and false negatives (missing genuinely offensive text that just
+  doesn't literally match the list) are expected, inherent limitations of a
+  literal keyword-matching approach.
+
+### A note on how filtering is applied
+
+Matched text is never permanently deleted — it's only visually covered
+(blurred, hidden, or replaced, depending on your chosen mode), while the
+original text stays untouched underneath. Clicking covered text reveals it
+(with a confirmation prompt by default), and clicking again re-hides it. This
+is a deliberate design choice to keep the person in control rather than
+enforcing a hard block — which also means the extension cannot guarantee a
+user will never see flagged content, since choosing to look past a warning or
+reveal covered text is always their choice.
+
+---
+
 ## How Scan Performance Is Measured
 
 Every full-page scan and every mutation-triggered re-scan is timed using the

@@ -209,6 +209,8 @@ the same set of scripts into already-open tabs (see "Activation" below).
 3. Enable **Developer mode** (top-right toggle).
 4. Click **Load unpacked** and select the extension folder.
 
+or simply search `VeilText - Profanity Filter` on chrome web store
+
 ---
 
 ## Features

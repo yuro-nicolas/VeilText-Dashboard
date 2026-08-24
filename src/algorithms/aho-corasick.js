@@ -87,13 +87,19 @@
         hasMatch(text, wholeWord = false) {
             if (!this.built) this.build();
             if (this.nodes.length === 1) return false;
-            if (wholeWord) return this.search(text, true).length > 0;
             const searchText = this.caseSensitive ? text : text.toLowerCase();
             let state = 0;
-            for (const ch of searchText) {
+            for (let i = 0; i < searchText.length; i++) {
+                const ch = searchText[i];
                 while (state !== 0 && !this.nodes[state].children.has(ch)) state = this.nodes[state].fail;
                 if (this.nodes[state].children.has(ch)) state = this.nodes[state].children.get(ch);
-                if (this.nodes[state].output.size > 0) return true;
+                for (const word of this.nodes[state].output) {
+                    if (!wholeWord) return true;
+                    const start = i - word.length + 1;
+                    const before = start > 0 ? searchText[start - 1] : ' ';
+                    const after = i + 1 < searchText.length ? searchText[i + 1] : ' ';
+                    if (!/\w/.test(before) && !/\w/.test(after)) return true;
+                }
             }
             return false;
         }

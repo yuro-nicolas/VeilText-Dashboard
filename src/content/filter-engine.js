@@ -9,7 +9,7 @@
 
     const Config = VeilText.Config;
     const State = VeilText.State;
-    const { SKIP_TAGS, LINK_SELECTOR, containsMedia, isEditableContext, isHidden, getVisibleText } = VeilText.DomUtils;
+    const { SKIP_TAGS, LINK_SELECTOR, containsMedia, isEditableContext, isHidden, getVisibleText, hasBlockLevelChild, flattenTextWithMap, mapRangeToNodes } = VeilText.DomUtils;
 
     // Returns the number of redactions actually present in the DOM right now.
     // Used instead of a running counter so the reported count self-corrects
@@ -177,6 +177,57 @@
         return 1;
     }
 
+    // Fallback for a keyword split across inline markup within ordinary body
+    // text (e.g. <p>bad<strong>word</strong></p>) -- the same class of gap
+    // LINK_SELECTOR/processLinkText already covers for links, extended to
+    // any element. Combines `container`'s own direct text-node children
+    // (not the whole subtree -- hasBlockLevelChild keeps this from
+    // double-scanning nested block containers) into one string, finds
+    // matches in the combined string, then redacts only the actual node
+    // ranges a match touches, leaving every untouched node (and any
+    // non-text content, like images) exactly as-is.
+    function processContainerText(container) {
+        if (!container || !State.hasActiveKeywords()) return 0;
+        if (container.nodeType !== 1) return 0;
+        if (SKIP_TAGS.has(container.tagName)) return 0;
+        if (isEditableContext(container)) return 0;
+        if (container.dataset && container.dataset.textguardProcessed) return 0;
+        if (isHidden(container)) return 0;
+        if (hasBlockLevelChild(container)) return 0; // handled at a deeper level instead
+
+        const { text, parts } = flattenTextWithMap(container);
+        if (!text || !text.trim() || parts.length < 2) return 0; // nothing to combine
+
+        const CONFIG = Config.get();
+        const matches = blockedMatches(text, CONFIG.wholeWord);
+        if (matches.length === 0) return 0;
+
+        let count = 0;
+        for (const m of matches) {
+            const start = m.index;
+            const end = m.index + m.keyword.length;
+            const hits = mapRangeToNodes(parts, start, end);
+            if (hits.length < 2) continue; // a single-node match is already caught by filterTextNodesIn
+
+            for (const hit of hits) {
+                const node = hit.node;
+                const nodeText = node.textContent;
+                const matchedSlice = nodeText.slice(hit.nodeStart, hit.nodeEnd);
+                const parent = node.parentElement;
+                if (!parent) continue;
+
+                const fragment = document.createDocumentFragment();
+                if (hit.nodeStart > 0) fragment.appendChild(document.createTextNode(nodeText.slice(0, hit.nodeStart)));
+                fragment.appendChild(VeilText.RevealUI.createFilteredSpan(matchedSlice, new Set([m.keyword])));
+                if (hit.nodeEnd < nodeText.length) fragment.appendChild(document.createTextNode(nodeText.slice(hit.nodeEnd)));
+                parent.replaceChild(fragment, node);
+                parent.dataset.textguardProcessed = 'true';
+            }
+            count++;
+        }
+        return count;
+    }
+
     // Full-page scan: every text node in document.body, plus the link
     // fallback pass. Called once on load and again on SPA route changes.
     function processPage() {
@@ -202,6 +253,16 @@
 
         document.querySelectorAll(LINK_SELECTOR).forEach(el => {
             pageCount += processLinkText(el);
+        });
+
+        // Split-node fallback pass: catches a blocked word split across
+        // inline markup (e.g. <p>bad<strong>word</strong></p>) inside
+        // ordinary body text, not just inside links. Runs after the plain
+        // text-node pass above -- flattenTextWithMap() already skips any
+        // node already marked textguard-processed, so this only looks at
+        // what the first pass left untouched.
+        document.body.querySelectorAll('*').forEach(el => {
+            pageCount += processContainerText(el);
         });
 
         const scanMs = performance.now() - t0;
@@ -233,6 +294,16 @@
         if (root.matches && root.matches(LINK_SELECTOR)) {
             count += processLinkText(root);
         }
+
+        // Same split-node fallback as processPage(), scoped to the
+        // newly-added subtree so mutation-triggered content gets the same
+        // coverage as the initial page scan.
+        if (root.nodeType === 1) {
+            count += processContainerText(root);
+            if (root.querySelectorAll) {
+                root.querySelectorAll('*').forEach(el => { count += processContainerText(el); });
+            }
+        }
         return count;
     }
 
@@ -244,6 +315,7 @@
     VeilText.FilterEngine.filterTextNode = filterTextNode;
     VeilText.FilterEngine.filterTextNodesIn = filterTextNodesIn;
     VeilText.FilterEngine.processLinkText = processLinkText;
+    VeilText.FilterEngine.processContainerText = processContainerText;
     VeilText.FilterEngine.processPage = processPage;
     VeilText.FilterEngine.processNode = processNode;
 })(window.VeilText);

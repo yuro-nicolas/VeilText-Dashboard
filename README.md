@@ -252,16 +252,7 @@ the same set of scripts into already-open tabs (see "Activation" below).
 
 ## Activation & Toggle Behavior
 
-- **First install:** the master toggle starts **OFF**. `background.js`'s
-  `chrome.runtime.onInstalled` handler seeds `chrome.storage.local` with
-  `filterEnabled: false` before anything else runs, so the first page a new
-  user sees is never unexpectedly redacted.
-- **After that:** whichever state you leave the master toggle in — on or off
-  — is what it stays in, including after closing and reopening the browser.
-  This isn't a special "remember last state" feature; it's simply because
-  every toggle change is written to `chrome.storage.local` immediately
-  (`popup.js` → `saveSettings()`), and that storage is what both the popup
-  and the content script read from on every load.
+- **First install:** the master toggle starts **ON** automatically
 - **Works on already-open tabs without a refresh:** on install (and on
   update/reload of the extension), `background.js` uses
   `chrome.scripting.executeScript` to inject the content script files

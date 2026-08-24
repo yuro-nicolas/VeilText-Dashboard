@@ -77,6 +77,75 @@
         return text;
     }
 
+    // Tags that, if present among an element's direct children, mean that
+    // element contains its own nested block-level structure -- so it should
+    // NOT be treated as one flat "leaf" of combinable text itself (its
+    // children are handled individually, at their own more specific
+    // granularity, instead).
+    const BLOCK_TAGS = new Set([
+        'P', 'DIV', 'LI', 'TD', 'TH', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6',
+        'BLOCKQUOTE', 'FIGCAPTION', 'DT', 'DD', 'UL', 'OL', 'TABLE', 'SECTION', 'ARTICLE'
+    ]);
+
+    function hasBlockLevelChild(el) {
+        if (!el.children) return false;
+        for (const child of el.children) {
+            if (BLOCK_TAGS.has(child.tagName)) return true;
+        }
+        return false;
+    }
+
+    // Combines the visible text of every not-yet-processed text-node child
+    // of `el` into one string, and returns `parts`: a list of
+    // { node, start, end } recording exactly which slice of the combined
+    // string came from which original text node. This lets a match found in
+    // the combined string be traced back to the real DOM node(s) it spans --
+    // needed to catch a blocked word split across inline markup (e.g.
+    // <p>bad<strong>word</strong></p>), which per-text-node matching alone
+    // cannot see, without disturbing any node the match doesn't touch.
+    //
+    // No separator is inserted between parts: any whitespace present in the
+    // original markup is already part of the text nodes themselves, so
+    // direct concatenation reproduces the reader-visible text exactly.
+    function flattenTextWithMap(el) {
+        const parts = [];
+        let combined = '';
+        const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
+            acceptNode(node) {
+                const parent = node.parentElement;
+                if (!parent) return NodeFilter.FILTER_REJECT;
+                if (SKIP_TAGS.has(parent.tagName)) return NodeFilter.FILTER_REJECT;
+                if (isEditableContext(parent)) return NodeFilter.FILTER_REJECT;
+                if (parent.dataset && parent.dataset.textguardProcessed) return NodeFilter.FILTER_REJECT;
+                if (parent.classList && parent.classList.contains('textguard-filtered')) return NodeFilter.FILTER_REJECT;
+                if (isHidden(parent)) return NodeFilter.FILTER_REJECT;
+                return NodeFilter.FILTER_ACCEPT;
+            }
+        });
+        let node;
+        while ((node = walker.nextNode())) {
+            const text = node.textContent;
+            if (!text) continue;
+            parts.push({ node, start: combined.length, end: combined.length + text.length });
+            combined += text;
+        }
+        return { text: combined, parts };
+    }
+
+    // Returns every { node, nodeStart, nodeEnd } that the [start, end) range
+    // of a flattenTextWithMap() combined string actually touches, with the
+    // range's offsets translated back into each individual node's own
+    // local character positions.
+    function mapRangeToNodes(parts, start, end) {
+        const hits = [];
+        for (const p of parts) {
+            const s = Math.max(start, p.start);
+            const e = Math.min(end, p.end);
+            if (s < e) hits.push({ node: p.node, nodeStart: s - p.start, nodeEnd: e - p.start });
+        }
+        return hits;
+    }
+
     VeilText.DomUtils.SKIP_TAGS = SKIP_TAGS;
     VeilText.DomUtils.LINK_SELECTOR = LINK_SELECTOR;
     VeilText.DomUtils.MEDIA_SELECTOR = MEDIA_SELECTOR;
@@ -84,4 +153,7 @@
     VeilText.DomUtils.isEditableContext = isEditableContext;
     VeilText.DomUtils.isHidden = isHidden;
     VeilText.DomUtils.getVisibleText = getVisibleText;
+    VeilText.DomUtils.hasBlockLevelChild = hasBlockLevelChild;
+    VeilText.DomUtils.flattenTextWithMap = flattenTextWithMap;
+    VeilText.DomUtils.mapRangeToNodes = mapRangeToNodes;
 })(window.VeilText);

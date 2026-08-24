@@ -59,7 +59,13 @@
 
     chrome.storage.local.get(['textguard_config'], (result) => {
         const cfg = result.textguard_config;
-        if (!cfg || !cfg.filterEnabled || !cfg.keywords || cfg.keywords.length === 0) {
+        // Only the master filter toggle is a reliable "nothing to filter"
+        // signal here. The bundled default lexicon is always active
+        // whenever filtering is on, even with zero custom keywords, and
+        // this script runs too early (document_start) to cheaply check
+        // that file's contents itself -- so an empty custom keyword list
+        // does NOT mean there's nothing for the real scan to find.
+        if (!cfg || !cfg.filterEnabled) {
             reveal();
         }
     });

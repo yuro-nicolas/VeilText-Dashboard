@@ -116,13 +116,26 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         (async () => {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), request.timeoutMs || 4000);
+
+            // Caps how many bytes of the response body this will ever read,
+            // regardless of what Content-Length claims (or doesn't claim --
+            // a chunked response has none). Reading via a stream instead of
+            // resp.text() lets this stop partway through an oversized body
+            // instead of first buffering the whole thing.
+            const MAX_BYTES = 5 * 1024 * 1024; // 5 MB is generous for a text page
+
             try {
                 const resp = await fetch(request.url, {
                     signal: controller.signal,
                     credentials: 'omit',
                     redirect: 'follow'
                 });
-                clearTimeout(timeoutId);
+                // clearTimeout intentionally NOT called here -- the timeout
+                // needs to stay armed through the body read below too, not
+                // just until headers arrive. A destination that returns
+                // valid headers immediately and then streams its body
+                // slowly would otherwise be free to keep this fetch open
+                // indefinitely once headers alone had cleared the timer.
 
                 if (!resp.ok) {
                     sendResponse({ ok: false, reason: `http_${resp.status}` });
@@ -133,11 +146,31 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     sendResponse({ ok: false, reason: 'non_text_content' });
                     return;
                 }
-                const html = await resp.text();
-                sendResponse({ ok: true, html });
+
+                const reader = resp.body.getReader();
+                const decoder = new TextDecoder();
+                let html = '';
+                let bytesRead = 0;
+                let truncated = false;
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    bytesRead += value.byteLength;
+                    if (bytesRead > MAX_BYTES) {
+                        truncated = true;
+                        await reader.cancel();
+                        break;
+                    }
+                    html += decoder.decode(value, { stream: true });
+                }
+                sendResponse({ ok: true, html, truncated });
             } catch (e) {
-                clearTimeout(timeoutId);
                 sendResponse({ ok: false, reason: e.name === 'AbortError' ? 'timeout' : 'fetch_error' });
+            } finally {
+                // Runs after the body read (or the abort/error that cut it
+                // short) either way, so this always cleans up the timer
+                // without leaving it armed past the point it's needed.
+                clearTimeout(timeoutId);
             }
         })();
         return true;
